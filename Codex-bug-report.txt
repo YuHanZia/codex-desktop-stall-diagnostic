@@ -1,0 +1,19 @@
+Title: Windows desktop repeatedly cannot send messages; killing codex.exe restores functionality
+
+The Codex desktop app repeatedly gets stuck spinning and cannot send messages, including messages in an existing troubleshooting conversation. Running Stop-Process -Name "codex" -Force restores functionality. This is a recurring workaround, not a permanent fix.
+
+Observed on September 25, 2026 (Asia/Taipei, UTC+8).
+Desktop log client version: 26.917.71314.
+Windows package: OpenAI.Codex_26.917.9434.0_x64.
+App-server reported version: 0.155.0-alpha.16.4.
+
+Evidence from local desktop logs:
+- 10:35:55 local: repeated "Conversation state not found" for the affected conversation, while thread/read requests still returned successfully in 3–46 ms.
+- Around 10:36:36: app-server connection restarted, consistent with the user's manual forced termination. The resulting disconnect errors must not be interpreted as proof of the original cause.
+- 10:36:40.750: "app_server_restart_recovery_done", with resumedCurrentConversation=true.
+- 10:36:47: codex_app MCP tools/list timed out after 10 seconds; this occurred after restart, so causality is not established.
+
+Expected: existing conversations can send messages reliably, or show a recoverable error without requiring manual process termination.
+Actual: indefinite spinning / inability to send until the background process is forcibly restarted.
+
+Please investigate desktop conversation-state synchronization and recovery. This is a hypothesis, not a confirmed root cause. No exact reproduction sequence has been established beyond recurring normal desktop use.
